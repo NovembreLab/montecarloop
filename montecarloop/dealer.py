@@ -99,8 +99,8 @@ class SimLine:
         return False
 
 
-def _no_null_hypothesis(stat_name, sim_params):
-    return math.nan
+def _no_null_hypothesis(sim_params):
+    return dict()
 
 
 class Dealer:
@@ -119,19 +119,14 @@ class Dealer:
         return self.lines[i].output
 
     def summary(self, null_hypothesizer=_no_null_hypothesis):
-        try:
-            import pandas
-        except ModuleNotFoundError:
-            raise NotImplementedError("Python package pandas required")
-
-        columns = ["stat", "mean", "std_dev", "std_err", "null_hypo", "pvalue", "num"]
-        ret = pandas.DataFrame(columns=columns)
+        data = list()
         for line in self.lines:
             if line.output.num > 0:
+                hypotheses = null_hypothesizer(line.sim_params)
                 for name in line.output.stat_names():
-                    null_hypo = null_hypothesizer(name, line.sim_params)
+                    null_hypo = hypotheses.get(name, math.nan)
                     params = {("param:" + k): v for k, v in line.sim_params.items()}
-                    d = dict(
+                    data.append(dict(
                         stat=name,
                         mean=line.output.mean(name),
                         std_dev=line.output.std_dev(name),
@@ -140,9 +135,12 @@ class Dealer:
                         pvalue=line.output.pvalue(name, null_hypo),
                         num=line.output.num,
                         **params
-                    )
-                    ret = ret.append(d, ignore_index=True)
-        return ret
+                    ))
+        try:
+            import pandas
+            return pandas.DataFrame(data)
+        except ModuleNotFoundError:
+            return data
 
     def run(self, exit_after_seconds=1, write_every_seconds=3) -> None:
         now = Dealer.time_func()

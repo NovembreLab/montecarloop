@@ -3,6 +3,7 @@
 import math
 
 import numpy as np
+import pandas
 from pytest import approx
 
 from montecarloop import Dealer, FakeCache, JsonFileCache
@@ -46,13 +47,11 @@ def test_monte_carlo_pi():
     assert_pi(dealer.output(0), 2048)
     dealer.run()
     assert_pi(dealer.output(0), 4096)
-    try:
-        s = dealer.summary()
-    except NotImplementedError:
-        return
+    s = dealer.summary()
     assert len(s.index) == 1
     assert s.loc[0, "stat"] == "pi"
     assert s.loc[0, "mean"] == approx(3.14, 0.01)
+    assert s.loc[0, "param:n"] == 1000
 
 
 def test_monte_carlo_pi_file(tmpdir):
