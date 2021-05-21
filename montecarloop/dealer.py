@@ -99,10 +99,6 @@ class SimLine:
         return False
 
 
-def _no_null_hypothesis(sim_params):
-    return dict()
-
-
 class Dealer:
 
     time_func = time.time
@@ -118,24 +114,24 @@ class Dealer:
     def output(self, i):
         return self.lines[i].output
 
-    def summary(self, null_hypothesizer=_no_null_hypothesis):
+    def summary(self, null_hypothesizer=None):
         data = list()
         for line in self.lines:
             if line.output.num > 0:
-                hypotheses = null_hypothesizer(line.sim_params)
                 for name in line.output.stat_names():
-                    null_hypo = hypotheses.get(name, math.nan)
-                    params = {("param:" + k): v for k, v in line.sim_params.items()}
-                    data.append(dict(
+                    d = dict(
                         stat=name,
+                        num=line.output.num,
                         mean=line.output.mean(name),
                         std_dev=line.output.std_dev(name),
                         std_err=line.output.std_err(name),
-                        null_hypo=null_hypo,
-                        pvalue=line.output.pvalue(name, null_hypo),
-                        num=line.output.num,
-                        **params
-                    ))
+                    )
+                    if null_hypothesizer is not None:
+                        hypotheses = null_hypothesizer(line.sim_params)
+                        d['null_hypo'] = hypotheses.get(name, math.nan)
+                        d['pvalue'] = line.output.pvalue(name, d['null_hypo'])
+                    d.update({("@" + k): v for k, v in line.sim_params.items()})
+                    data.append(d)
         try:
             import pandas
             return pandas.DataFrame(data)

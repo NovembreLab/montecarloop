@@ -51,7 +51,7 @@ def test_monte_carlo_pi():
     assert len(s.index) == 1
     assert s.loc[0, "stat"] == "pi"
     assert s.loc[0, "mean"] == approx(3.14, 0.01)
-    assert s.loc[0, "param:n"] == 1000
+    assert s.loc[0, "@n"] == 1000
 
 
 def test_monte_carlo_pi_file(tmpdir):
