@@ -1,0 +1,42 @@
+[
+  {
+    "sim_params": {
+      "n": 100,
+      "r": 1.0
+    },
+    "seed_seed": 666,
+    "target_num": 32000
+  },
+  {
+    "sim_params": {
+      "n": 1000,
+      "r": 1.0
+    },
+    "seed_seed": 667,
+    "target_num": 32000
+  },
+  {
+    "sim_params": {
+      "n": 10000,
+      "r": 1.0
+    },
+    "seed_seed": 668,
+    "target_num": 32000
+  },
+  {
+    "sim_params": {
+      "n": 10000,
+      "r": 0.79788456
+    },
+    "seed_seed": 669,
+    "target_num": 32000
+  },
+  {
+    "sim_params": {
+      "n": 10000,
+      "r": 1.001
+    },
+    "seed_seed": 700,
+    "target_num": 32000
+  }
+]
